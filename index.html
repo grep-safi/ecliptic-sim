@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>
+        Ecliptic Simulator
+    </title>
+    <link rel="stylesheet" type="text/css" href="./css/main.css" />
+</head>
+
+<body>
+
+<div id="sim-root">
+    <div class="nav-bar">
+        <h1 class="nav-bar-text" id="title">Seasons and Ecliptic Simulator</h1>
+        <nav>
+            <ul>
+                <li><a class="nav-bar-text" href="#">Reset</a></li>
+                <li><a class="nav-bar-text" href="#">Help</a></li>
+                <li><a class="nav-bar-text" href="#">About</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="top-half">
+        <div class="main-3d">
+            <canvas id="c" width="700" height="600"></canvas>
+        </div>
+
+        <div class="empty">
+
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import * as THREE from './resources/threejs/r115/build/three.module.js';
+</script>
+<script type="module" src="src/Orbit.js"></script>
+</body>
+</html>
