@@ -1,47 +1,72 @@
-import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r115/build/three.module.js';
+// If you change width or height, you must change the css width and height for div,
+// the aspect ratio in this file and of course, the width and height values in the canvas element
 
-function main() {
-    const canvas = document.querySelector('#c');
-    const renderer = new THREE.WebGLRenderer({canvas});
+var scene = new THREE.Scene();
 
-    const fov = 60;
-    const aspect = 7 / 6;
-    const near = 0.1;
-    const far = 5;
-    const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.z = 2;
+var camera = new THREE.PerspectiveCamera(75,7 / 6,0.1,1000)
+camera.position.z = 5;
 
-    const scene = new THREE.Scene();
+const canvas = document.querySelector('#c');
+const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
 
-    const color = 0xFF13A8;
-    const intensity = 1;
-    const light = new THREE.DirectionalLight(color, intensity);
-    light.position.set(-1, 2, 4);
-    scene.add(light);
+// var renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setClearColor("#e5e5e5");
+renderer.setSize(700,600);
 
-    const boxWidth = 1;
-    const boxHeight = 1;
-    const boxDepth = 1;
-    const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+document.body.appendChild(renderer.domElement);
 
-    const material = new THREE.MeshPhongMaterial({color: 0x44aa88});  // greenish blue
+window.addEventListener('resize', () => {
+    renderer.setSize(700 ,600);
+    camera.aspect = 7 / 6;
 
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+    camera.updateProjectionMatrix();
+})
 
-    function render(time) {
-        time *= 0.001;  // convert time to seconds
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
 
-        cube.rotation.x = time;
-        cube.rotation.y = time;
+var geometry = new THREE.BoxGeometry(1, 1, 1);
+var material = new THREE.MeshLambertMaterial({color: 0xF7F7F7});
+//var mesh = new THREE.Mesh(geometry, material);
 
-        renderer.render(scene, camera);
+//scene.add(mesh);
 
-        requestAnimationFrame(render);
-    }
-    requestAnimationFrame(render);
-
+let meshX = -10;
+for(var i = 0; i<15;i++) {
+    var mesh = new THREE.Mesh(geometry, material);
+    mesh.position.x = (Math.random() - 0.5) * 10;
+    mesh.position.y = (Math.random() - 0.5) * 10;
+    mesh.position.z = (Math.random() - 0.5) * 10;
+    scene.add(mesh);
+    meshX+=1;
 }
 
-main();
 
+var light = new THREE.PointLight(0xFFFFFF, 1, 1000)
+light.position.set(0,0,0);
+scene.add(light);
+
+var light = new THREE.PointLight(0xFFFFFF, 2, 1000)
+light.position.set(0,0,25);
+scene.add(light);
+
+var render = function() {
+    requestAnimationFrame(render);
+
+
+    renderer.render(scene, camera);
+}
+
+// function onMouseMove(event) {
+//     event.preventDefault();
+//
+//     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+//     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+//
+//     raycaster.setFromCamera(mouse, camera);
+// }
+
+
+
+// window.addEventListener('mousemove', onMouseMove);
+render();
