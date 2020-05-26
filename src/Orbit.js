@@ -1,72 +1,92 @@
 // If you change width or height, you must change the css width and height for div,
 // the aspect ratio in this file and of course, the width and height values in the canvas element
 
-var scene = new THREE.Scene();
+import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r115/build/three.module.js';
 
-var camera = new THREE.PerspectiveCamera(75,7 / 6,0.1,1000)
-camera.position.z = 5;
+let camera,
+    scene;
 
-const canvas = document.querySelector('#c');
-const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
+function createCamera(width, height) {
+    const fov = 75;
+    const aspect = width / height;
+    const near = 0.1;
+    const far = 5;
 
-// var renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setClearColor("#e5e5e5");
-renderer.setSize(700,600);
-
-document.body.appendChild(renderer.domElement);
-
-window.addEventListener('resize', () => {
-    renderer.setSize(700 ,600);
-    camera.aspect = 7 / 6;
-
-    camera.updateProjectionMatrix();
-})
-
-var raycaster = new THREE.Raycaster();
-var mouse = new THREE.Vector2();
-
-var geometry = new THREE.BoxGeometry(1, 1, 1);
-var material = new THREE.MeshLambertMaterial({color: 0xF7F7F7});
-//var mesh = new THREE.Mesh(geometry, material);
-
-//scene.add(mesh);
-
-let meshX = -10;
-for(var i = 0; i<15;i++) {
-    var mesh = new THREE.Mesh(geometry, material);
-    mesh.position.x = (Math.random() - 0.5) * 10;
-    mesh.position.y = (Math.random() - 0.5) * 10;
-    mesh.position.z = (Math.random() - 0.5) * 10;
-    scene.add(mesh);
-    meshX+=1;
+    camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    camera.position.z = 2;
 }
 
+function main() {
+    const canvas = document.querySelector('#c');
+    const renderer = new THREE.WebGLRenderer({canvas, antialias: true});
 
-var light = new THREE.PointLight(0xFFFFFF, 1, 1000)
-light.position.set(0,0,0);
-scene.add(light);
+    createCamera(canvas.clientWidth, canvas.clientHeight);
 
-var light = new THREE.PointLight(0xFFFFFF, 2, 1000)
-light.position.set(0,0,25);
-scene.add(light);
+    scene = new THREE.Scene();
 
-var render = function() {
-    requestAnimationFrame(render);
+    const color = 0xFFFFFF;
+    const intensity = 1;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(-1, 2, 4);
+    scene.add(light);
 
+    const boxWidth = 1;
+    const boxHeight = 1;
+    const boxDepth = 1;
+    const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
 
-    renderer.render(scene, camera);
+    function makeInstance(geometry, color, x) {
+        const material = new THREE.MeshPhongMaterial({color});
+
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        cube.position.x = x;
+
+        return cube;
+    }
+
+    const cubes = [
+        makeInstance(geometry, 0x44aa88,  0),
+        makeInstance(geometry, 0x8844aa, -2),
+        makeInstance(geometry, 0xaa8844,  2),
+    ];
+
+    function resizeRendererToDisplaySize(renderer) {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const needResize = canvas.width !== width || canvas.height !== height;
+        if (needResize) {
+            renderer.setSize(width, height, false);
+        }
+        return needResize;
+    }
+
+    function render() {
+
+        if (resizeRendererToDisplaySize(renderer)) {
+            const canvas = renderer.domElement;
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+        }
+
+        cubes.forEach((cube, ndx) => {
+            const speed = 0.01 + ndx * 0.01;
+            const rot = speed;
+            cube.rotation.x += rot;
+            cube.rotation.y += rot;
+        });
+
+        renderer.render(scene, camera);
+
+        requestAnimationFrame(render);
+    }
+
+    render();
+
+    // requestAnimationFrame(render);
 }
 
-// function onMouseMove(event) {
-//     event.preventDefault();
-//
-//     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-//     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-//
-//     raycaster.setFromCamera(mouse, camera);
-// }
+main();
 
-
-
-// window.addEventListener('mousemove', onMouseMove);
-render();
