@@ -92,6 +92,9 @@
 /*    font-size: 12px;*/
 /*}*/
 
+body {
+    background-color: darkslateblue;
+}
 
 #sim-root {
     width: 75%;
